@@ -21,4 +21,7 @@ public class PublisherController {
         return ResponseEntity.ok("Message received");
     }
 
+    // TODO route where new exchange can be created dynamically
+    // Using multithreading maybe?
+
 }
