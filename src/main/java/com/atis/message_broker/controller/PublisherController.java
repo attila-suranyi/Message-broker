@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class PublisherController {
 
-    @PostMapping("/create_pdf")
-    public ResponseEntity<String> createPDF() {
+    @PostMapping("/direct_exchange")
+    public ResponseEntity<String> directExchange(@RequestHeader("x-routing-key") String routingKey) {
         return ResponseEntity.ok("Message received");
     }
 

@@ -1,5 +1,6 @@
 package com.atis.message_broker.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,9 +20,10 @@ class PublisherControllerTest {
     @Autowired
     private MockMvc mvc;
 
+
     @Test
-    void createPDF_returnsOK() throws Exception {
-        mvc.perform(post("/api/create_pdf")
+    void directExchange_returnsOK() throws Exception {
+        mvc.perform(post("/api/direct_exchange")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
