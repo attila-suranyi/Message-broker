@@ -7,4 +7,7 @@ import java.net.http.HttpRequest;
 public interface EnqueueAble {
 
     void enqueue(String routingKey, String message) throws IncorrectRoutingKeyException;
+
+    //TODO queue type
+    void registerQueue(String queue, String bindingKey);
 }

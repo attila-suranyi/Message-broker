@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 //TODO abstract class will be needed
+//TODO make exchange dynamically creatable
 @Component("direct")
 public class DirectExchange implements EnqueueAble {
 
@@ -16,9 +17,15 @@ public class DirectExchange implements EnqueueAble {
 
 
     //TODO message type
+    @Override
     public void enqueue(String routingKey, String message) throws IncorrectRoutingKeyException {
         if (!bindings.containsKey(routingKey)) {
             throw new IncorrectRoutingKeyException("");
         }
+    }
+
+    @Override
+    public void registerQueue(String queue, String bindingKey) {
+        this.bindings.put(bindingKey, queue);
     }
 }

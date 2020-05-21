@@ -23,7 +23,8 @@ class DirectExchangeTest {
 
     @Test
     void incorrectRoutingKeyThrowsException() {
-        assertThrows(IncorrectRoutingKeyException.class, () -> exchange.enqueue("routing key 1", "message"));
+        assertThrows(IncorrectRoutingKeyException.class,
+                () -> exchange.enqueue("routing key 1", "message"));
     }
 
 }
