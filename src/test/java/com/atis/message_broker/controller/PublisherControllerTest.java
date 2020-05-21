@@ -22,8 +22,26 @@ class PublisherControllerTest {
 
 
     @Test
-    void directExchange_returnsOK() throws Exception {
-        mvc.perform(post("/api/direct_exchange")
+    void directRouteWithoutRoutingKey_returnsBadRequest() throws Exception {
+        mvc.perform(post("/api/direct")
+                .content("message")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void directRouteWithoutBody_returnsBadRequest() throws Exception {
+        mvc.perform(post("/api/direct")
+                .header("x-routing-key", "queue-1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void directRouteWithRoutingKeyAndBody_returnsOK() throws Exception {
+        mvc.perform(post("/api/direct")
+                .header("x-routing-key", "queue-1")
+                .content("this is the message")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
