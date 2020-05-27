@@ -65,7 +65,7 @@ class PublisherControllerTest {
 
     @Test
     void directRouteWithRoutingKeyAndBody_returnsOK() throws Exception {
-        directExchange.registerQueue("queue-create-pdf", "create-pdf");
+        directExchange.registerQueue("create-pdf");
 
         mvc.perform(post("/api/direct")
                 .header("x-routing-key", "create-pdf")

@@ -4,28 +4,37 @@ import com.atis.message_broker.exception.IncorrectRoutingKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //TODO abstract class will be needed
 //TODO make exchange dynamically creatable
-@Component("direct")
+@Service("direct")
 public class DirectExchange implements EnqueueAble {
 
-    //TODO use DB or something
-    private Map<String, String> bindings = new HashMap<>();
+    //TODO Java object serialization, Redis
+    //TODO Enum for bindings?
+    private Map<String, List<String>> bindings = new HashMap<>();
 
 
     //TODO message type
     @Override
-    public void enqueue(String routingKey, String message) throws IncorrectRoutingKeyException {
-        if (!bindings.containsKey(routingKey)) {
-            throw new IncorrectRoutingKeyException("");
+    public void enqueue(String bindingKey, String message) throws IncorrectRoutingKeyException {
+        if (!bindings.containsKey(bindingKey)) {
+            throw new IncorrectRoutingKeyException("No queue with matching routing key!");
         }
+        bindings.get(bindingKey).add(message);
     }
 
     @Override
-    public void registerQueue(String queue, String bindingKey) {
-        this.bindings.put(bindingKey, queue);
+    public void registerQueue(String bindingKey) {
+        this.bindings.put(bindingKey, new ArrayList<>());
+    }
+
+    @Override
+    public List<String> getQueue(String bindingKey) {
+        return bindings.get(bindingKey);
     }
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.lang.reflect.Field;
 import java.net.http.HttpRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,4 +28,16 @@ class DirectExchangeTest {
                 () -> exchange.enqueue("routing key 1", "message"));
     }
 
+    @Test
+    void queueRegistered() {
+        exchange.registerQueue("create-pdf");
+        assertNotNull(exchange.getQueue("create-pdf"));
+    }
+
+    @Test
+    void messageSaved() throws IncorrectRoutingKeyException {
+        exchange.registerQueue("create-pdf");
+        exchange.enqueue("create-pdf", "message");
+        assertEquals(1, exchange.getQueue("create-pdf").size());
+    }
 }
