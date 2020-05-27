@@ -1,21 +1,26 @@
 package com.atis.message_broker.service.exchange;
 
+import com.atis.message_broker.config.RedisConfig;
 import com.atis.message_broker.exception.IncorrectRoutingKeyException;
+import com.atis.message_broker.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
-import java.lang.reflect.Field;
-import java.net.http.HttpRequest;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.isA;
 
 
 @SpringBootTest
+@ContextConfiguration(classes = RedisConfig.class)
 class DirectExchangeTest {
 
     private DirectExchange exchange;
+
 
     @BeforeEach
     void init() {

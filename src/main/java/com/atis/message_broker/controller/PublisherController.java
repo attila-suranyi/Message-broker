@@ -1,6 +1,7 @@
 package com.atis.message_broker.controller;
 
 import com.atis.message_broker.exception.IncorrectRoutingKeyException;
+import com.atis.message_broker.model.Student;
 import com.atis.message_broker.service.exchange.EnqueueAble;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;

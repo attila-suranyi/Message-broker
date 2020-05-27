@@ -1,6 +1,7 @@
 package com.atis.message_broker.service.exchange;
 
 import com.atis.message_broker.exception.IncorrectRoutingKeyException;
+import com.atis.message_broker.model.Student;
 
 import java.util.List;
 
