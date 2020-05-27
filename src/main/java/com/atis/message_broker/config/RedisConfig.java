@@ -8,20 +8,20 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
-@Configuration
+//@Configuration
 /*@ComponentScan("com.atis.message_broker")
 @EnableRedisRepositories(basePackages = "com.atis.message_broker.repository")*/
 public class RedisConfig {
 
-    @Bean
+    /*@Bean
     JedisConnectionFactory jedisConnectionFactory() {
         return new JedisConnectionFactory();
-    }
+    }*/
 
-    @Bean
+    /*@Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
         return template;
-    }
+    }*/
 }

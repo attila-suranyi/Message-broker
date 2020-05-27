@@ -3,6 +3,9 @@ package com.atis.message_broker.service.exchange;
 import com.atis.message_broker.exception.IncorrectRoutingKeyException;
 import com.atis.message_broker.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.ReactiveListOperations;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,12 +17,19 @@ import java.util.Map;
 public class DirectExchange implements EnqueueAble {
 
     private Map<String, List<String>> bindings = new HashMap<>();
-    private StudentRepository repo;
+    /*private StudentRepository repo;
 
     @Autowired
     public void setRepo(StudentRepository repo) {
         this.repo = repo;
-    }
+    }*/
+
+    @Qualifier("reactiveRedisTemplateString")
+    @Autowired
+    private ReactiveRedisTemplate<String, String> redisTemplate;
+
+    private ReactiveListOperations<String, String> reactiveListOps;
+
 
     //TODO message type
     @Override
