@@ -1,6 +1,5 @@
 package com.atis.message_broker.controller;
 
-import com.atis.message_broker.repository.StudentRepository;
 import com.atis.message_broker.service.exchange.DirectExchange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,8 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;

@@ -1,53 +1,42 @@
 package com.atis.message_broker.service.exchange;
 
 import com.atis.message_broker.exception.IncorrectRoutingKeyException;
-import com.atis.message_broker.repository.StudentRepository;
+import com.atis.message_broker.model.DirectMessage;
+import com.atis.message_broker.repository.CustomMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.ReactiveListOperations;
-import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("direct")
 public class DirectExchange implements EnqueueAble {
 
     private Map<String, List<String>> bindings = new HashMap<>();
-    /*private StudentRepository repo;
+    private CustomMessageRepository repository;
+    private RedisTemplate<String, DirectMessage> template;
 
     @Autowired
-    public void setRepo(StudentRepository repo) {
-        this.repo = repo;
-    }*/
-
-    @Qualifier("reactiveRedisTemplateString")
-    @Autowired
-    private ReactiveRedisTemplate<String, String> redisTemplate;
-
-    private ReactiveListOperations<String, String> reactiveListOps;
+    public void init(
+            CustomMessageRepository repository,
+            RedisTemplate<String, DirectMessage> template) {
+        this.repository = repository;
+        this.template = template;
+    }
 
 
     //TODO message type
     @Override
     public void enqueue(String bindingKey, String message) throws IncorrectRoutingKeyException {
-        if (!bindings.containsKey(bindingKey)) {
-            throw new IncorrectRoutingKeyException("No queue with matching routing key!");
-        }
-        //repository.save(message);
-        bindings.get(bindingKey).add(message);
+//        if (!bindings.containsKey(bindingKey)) {
+//            throw new IncorrectRoutingKeyException("No queue with matching routing key!");
+//        }
+        repository.save(new DirectMessage(bindingKey, message));
+        //bindings.get(bindingKey).add(message);
     }
 
     @Override
     public void registerQueue(String bindingKey) {
         this.bindings.put(bindingKey, new ArrayList<>());
-    }
-
-    @Override
-    public List<String> getQueue(String bindingKey) {
-        return bindings.get(bindingKey);
     }
 }
