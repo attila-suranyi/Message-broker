@@ -6,7 +6,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
@@ -20,11 +19,6 @@ public class RedisConfig {
     public JedisConnectionFactory jedisConnectionFactory() {
         return new JedisConnectionFactory();
     }
-
-//    @Bean
-//    public LettuceConnectionFactory lettuceConnectionFactory() {
-//        return new LettuceConnectionFactory();
-//    }
 
     @Bean(name = "defaultTemplate")
     public RedisTemplate<String, DirectMessage> redisMessageTemplate() {

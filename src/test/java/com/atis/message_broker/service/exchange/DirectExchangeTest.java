@@ -16,7 +16,6 @@ class DirectExchangeTest {
 
     private DirectExchange exchange;
 
-
     @BeforeEach
     void init() {
         this.exchange = new DirectExchange();

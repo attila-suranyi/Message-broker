@@ -30,18 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RedisTest {
 
-    private CustomMessageRepository repository;
     private RedisServer redisServer;
-
 
     @Autowired
     @Qualifier("flushRedisTemplate")
     private RedisTemplate<String, DirectMessage> flushRedisTemplate;
-
-    @Autowired
-    private void init(CustomMessageRepository repository) {
-        this.repository = repository;
-    }
 
     @Before
     public void setup() {
@@ -66,8 +59,8 @@ public class RedisTest {
     @Test
     void messagePersisted() {
         DirectMessage message = new DirectMessage("create_pdf", "This is the pdf content");
-        repository.save(message);
-        DirectMessage messageRetrieved = repository.findById(message.getId()).get();
+        flushRedisTemplate.opsForValue().set(message.getRoutingKey(), message);
+        DirectMessage messageRetrieved = flushRedisTemplate.opsForValue().get(message.getRoutingKey());
         assertEquals(message, messageRetrieved);
     }
 
@@ -95,7 +88,6 @@ public class RedisTest {
         assertNull(simpleList.leftPop("flushed"));
     }
 
-
     @Test
     void newQueueCreated() {
         DirectMessage message1 = new DirectMessage("create-pdf", "content1");
@@ -104,15 +96,10 @@ public class RedisTest {
 
         ListOperations<String, DirectMessage> simpleList = flushRedisTemplate.opsForList();
 
-        Long num1 = simpleList.leftPush(message1.getRoutingKey(), message1);
-        Long num2 = simpleList.leftPush(message2.getRoutingKey(), message2);
-        Long num3 = simpleList.leftPush(message3.getRoutingKey(), message3);
+        simpleList.leftPush(message1.getRoutingKey(), message1);
+        simpleList.leftPush(message2.getRoutingKey(), message2);
+        simpleList.leftPush(message3.getRoutingKey(), message3);
 
-        flushRedisTemplate.execute((RedisCallback<Void>) connection -> {
-            connection.flushDb();
-            return null;
-        });
-
-        assertNull(simpleList.leftPop("create-pdf"));
+        assertEquals(2, simpleList.size("create-pdf"));
     }
 }
