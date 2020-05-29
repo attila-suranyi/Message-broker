@@ -5,71 +5,62 @@ import com.atis.message_broker.model.DirectMessage;
 import com.atis.message_broker.repository.CustomMessageRepository;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.annotation.DirtiesContext;
-import redis.embedded.RedisServer;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import redis.embedded.RedisServer;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
-@ContextConfiguration(classes = TestRedisConfiguration.class)
+@ContextConfiguration(classes = RedisConfig.class)
 @ComponentScan(basePackages = {"com.atis.message_broker"})
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RedisTest {
 
     private CustomMessageRepository repository;
+    private RedisServer redisServer;
 
-    private RedisTemplate<String, DirectMessage> template;
-
-
-    //private RedisServer redisServer;
-
-
-    /*@Autowired
-    @Qualifier("flushRedisTemplate")
-    private RedisTemplate<String, String> flushRedisTemplate;*/
 
     @Autowired
-    private void init(
-            CustomMessageRepository repository,
-            RedisTemplate<String, DirectMessage> template) {
-        this.repository = repository;
-        this.template = template;
-    }
-//
-//    @Before
-//    public void setup() throws IOException {
-//        redisServer = new RedisServer();
-//        redisServer.start();
-//    }
-//
-//    @After
-//    public void tearDown() {
-//        redisServer.stop();
-//    }
+    @Qualifier("flushRedisTemplate")
+    private RedisTemplate<String, DirectMessage> flushRedisTemplate;
 
-//    @AfterEach
-//    private void cleanUp() {
-//        flushRedisTemplate.execute((RedisCallback<Void>) connection -> {
-//            connection.flushAll();
-//            return null;
-//        });
-//    }
+    @Autowired
+    private void init(CustomMessageRepository repository) {
+        this.repository = repository;
+    }
+
+    @Before
+    public void setup() {
+        redisServer = new RedisServer(6390);
+        redisServer.start();
+    }
+
+    @After
+    public void tearDown() {
+        redisServer.stop();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        flushRedisTemplate.execute((RedisCallback<Void>) connection -> {
+            connection.flushAll();
+            return null;
+        });
+    }
 
 
     @Test
@@ -87,9 +78,23 @@ public class RedisTest {
                 new DirectMessage("create-pdf", "content2"),
                 new DirectMessage("create-pdf", "content3")
         );
-        template.opsForList().leftPushAll("create-pdf", messages);
-        assertEquals("content3", template.opsForList().leftPop("create-pdf").getContent());
+        flushRedisTemplate.opsForList().leftPushAll("create-pdf", messages);
+        assertEquals("content3", flushRedisTemplate.opsForList().leftPop("create-pdf").getContent());
     }
+
+    @Test
+    void redisFlushed() {
+        DirectMessage message1 = new DirectMessage("flushed", "content");
+        ListOperations<String, DirectMessage> simpleList = flushRedisTemplate.opsForList();
+
+        simpleList.leftPush(message1.getRoutingKey(), message1);
+        flushRedisTemplate.execute((RedisCallback<Void>) connection -> {
+            connection.flushDb();
+            return null;
+        });
+        assertNull(simpleList.leftPop("flushed"));
+    }
+
 
     @Test
     void newQueueCreated() {
@@ -97,8 +102,17 @@ public class RedisTest {
         DirectMessage message2 = new DirectMessage("create-pdf", "content2");
         DirectMessage message3 = new DirectMessage("something else", "content3");
 
-        Long num1 = template.opsForList().leftPush(message1.getRoutingKey(), message1);
-        Long num2 = template.opsForList().leftPush(message2.getRoutingKey(), message2);
-        Long num3 = template.opsForList().leftPush(message3.getRoutingKey(), message3);
+        ListOperations<String, DirectMessage> simpleList = flushRedisTemplate.opsForList();
+
+        Long num1 = simpleList.leftPush(message1.getRoutingKey(), message1);
+        Long num2 = simpleList.leftPush(message2.getRoutingKey(), message2);
+        Long num3 = simpleList.leftPush(message3.getRoutingKey(), message3);
+
+        flushRedisTemplate.execute((RedisCallback<Void>) connection -> {
+            connection.flushDb();
+            return null;
+        });
+
+        assertNull(simpleList.leftPop("create-pdf"));
     }
 }

@@ -4,6 +4,7 @@ import com.atis.message_broker.exception.IncorrectRoutingKeyException;
 import com.atis.message_broker.model.DirectMessage;
 import com.atis.message_broker.repository.CustomMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class DirectExchange implements EnqueueAble {
     @Autowired
     public void init(
             CustomMessageRepository repository,
-            RedisTemplate<String, DirectMessage> template) {
+            @Qualifier("defaultTemplate") RedisTemplate<String, DirectMessage> template) {
         this.repository = repository;
         this.template = template;
     }
