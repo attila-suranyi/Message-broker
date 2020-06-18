@@ -17,6 +17,7 @@ public class DirectExchange implements EnqueueAble {
     private CustomMessageRepository repository;
     private RedisTemplate<String, DirectMessage> template;
 
+    //TODO @RequiredArgsConstructor instaed of init? check article
     @Autowired
     public void init(
             CustomMessageRepository repository,

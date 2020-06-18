@@ -21,8 +21,7 @@ import redis.embedded.RedisServer;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ContextConfiguration(classes = RedisConfig.class)
@@ -101,5 +100,16 @@ public class RedisTest {
         simpleList.leftPush(message3.getRoutingKey(), message3);
 
         assertEquals(2, simpleList.size("create-pdf"));
+    }
+
+
+    @Test
+    void messageIdGeneration() {
+        DirectMessage message = new DirectMessage("create_pdf", "This is the pdf content");
+
+        flushRedisTemplate.opsForValue().set(message.getRoutingKey(), message);
+        DirectMessage messageRetrieved = flushRedisTemplate.opsForValue().get(message.getRoutingKey());
+
+        assertNotNull(messageRetrieved.getId());
     }
 }
